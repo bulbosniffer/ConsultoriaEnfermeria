@@ -8,6 +8,10 @@ tmp/
 *.db
 *.sqlite3
 
+# Mantener instance pero no su contenido (opcional)
+instance/
+!instance/.gitkeep
+
 # Bytecode de Python
 __pycache__/
 *.py[cod]

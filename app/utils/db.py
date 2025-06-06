@@ -2,8 +2,18 @@ import os
 import sqlite3
 import bcrypt
 
-DB_NAME = os.path.join(os.path.dirname(__file__), '..', 'tmp', 'salud_adulto.db')
-os.makedirs(os.path.dirname(DB_NAME), exist_ok=True)
+
+# Ruta base del proyecto
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Directorio instance (Flask recomienda este nombre)
+INSTANCE_DIR = os.path.join(BASE_DIR, 'instance')
+
+# Base de datos
+DB_NAME = os.path.join(INSTANCE_DIR, 'salud_adulto.db')
+
+# Crear directorio instance si no existe
+os.makedirs(INSTANCE_DIR, exist_ok=True)
 
 def crear_base_datos():
     conn = sqlite3.connect(DB_NAME)
