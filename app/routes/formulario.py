@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, session, flash, url_for,send_file
+from flask import Blueprint, render_template, request, redirect, session, flash, url_for, send_file
 from app.utils.validaciones import campos_validos
 from app.utils.db import DB_NAME
 from ..utils.exportador import generar_excel
@@ -7,8 +7,7 @@ from datetime import date
 
 bp = Blueprint('formulario', __name__)
 
-
-@bp.route('/formulario')
+@bp.route('/formulario', methods=['GET', 'POST'])  # ✅ Acepta ambos métodos
 def formulario():
     if 'usuario' not in session:
         flash('Debes iniciar sesión', 'error')
@@ -22,6 +21,7 @@ def formulario():
         if not validado:
             flash(f"Completa el campo: {campo}", 'danger')
             return redirect(url_for('formulario.formulario'))
+        
         try:
             data = (
                 request.form.get('unidad_salud', ''),
@@ -37,7 +37,7 @@ def formulario():
                 request.form.get('paciente', ''),
                 request.form.get('fecha_nacimiento', ''),
                 request.form.get('domicilio', ''),
-                int(request.form.get('edad', 0)),  # 0 por defecto; valida antes que sea > 0
+                int(request.form.get('edad', 0)),
                 request.form.get('sexo', ''),
                 request.form.get('indigena', ''),
                 request.form.get('migrante', ''),
@@ -79,72 +79,35 @@ def formulario():
             conn = sqlite3.connect(DB_NAME)
             c = conn.cursor()
             c.execute('''INSERT INTO registro_adultos_mayores (
-                unidad_salud,
-                entidad_federativa,
-                clues,
-                localidad,
-                servicio,
-                personal_enfermeria, 
-                fecha,
-                hora_inicio, 
-                hora_termino,
-                nombre_jefe_fam, 
-                paciente,
-                fecha_nacimiento, 
-                domicilio,    
-                edad,
-                sexo,
-                indigena,
-                migrante,
-                nivel_atencion,
-                consulta_enfermeria,
-                consultoria_otorgada,
-                prescripcion_medicamentos, 
-                DG_plan_cuidados, 
-                DG_GRUPOS_EDAD,
-                INSTITUCION_PROCEDENCIA,           
-                CONSEJERIA_PF,
-                PF_GRUPOS_EDAD,           
-                PF_SUBSECUENTE,          
-                PF_METODO,
-                VI_EMB_grupo_edad,
-                VI_EMB_TRIMESTRE_GESTACIONAL,
-                VI_EMB_ACCIONES_IRREDUCTIBLES,
-                observaciones,           
-                DETECCION_TAMIZ,          
-                diagnostico_nutricional,           
-                SALUD_GINECO_DETECCION, 
-                EDA_SOBRES_DE_HIDRATACION_ORAL_ENTREGADOS,
-                EDA_MADRES_CAPACITADAS_MANEJO,
-                IRA_MADRES_CAPACITADAS_MANEJO,
-                grupo_riesgo,               
-                DETECCION_ENFERMEDADES_CRONICAS,           
-                DIABETES_MELLITUS,           
-                DISLIPIDEMIA,            
-                hipertension,       
-                REVISION_INTEGRAL_PIEL_MIEMBROS_INFERIORES,
-                DIABETICOS_INFORMADOS_CUIDADOS_PIES,
-                vacunacion,           
-                PROMOCION_SALUD,
-                DERIVACION,           
-                ACTIVIDADES_ASISTENCIALES,
-                OBSERVACIONES_GENERALES
-            )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
-                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
-                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
-                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
-                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', data)
-            print(len(data))                
+                unidad_salud, entidad_federativa, clues, localidad, servicio,
+                personal_enfermeria, fecha, hora_inicio, hora_termino, nombre_jefe_fam,
+                paciente, fecha_nacimiento, domicilio, edad, sexo,
+                indigena, migrante, nivel_atencion, consulta_enfermeria, consultoria_otorgada,
+                prescripcion_medicamentos, DG_plan_cuidados, DG_GRUPOS_EDAD, INSTITUCION_PROCEDENCIA, CONSEJERIA_PF,
+                PF_GRUPOS_EDAD, PF_SUBSECUENTE, PF_METODO, VI_EMB_grupo_edad, VI_EMB_TRIMESTRE_GESTACIONAL,
+                VI_EMB_ACCIONES_IRREDUCTIBLES, observaciones, DETECCION_TAMIZ, diagnostico_nutricional, SALUD_GINECO_DETECCION,
+                EDA_SOBRES_DE_HIDRATACION_ORAL_ENTREGADOS, EDA_MADRES_CAPACITADAS_MANEJO, IRA_MADRES_CAPACITADAS_MANEJO, grupo_riesgo, DETECCION_ENFERMEDADES_CRONICAS,
+                DIABETES_MELLITUS, DISLIPIDEMIA, hipertension, REVISION_INTEGRAL_PIEL_MIEMBROS_INFERIORES, DIABETICOS_INFORMADOS_CUIDADOS_PIES,
+                vacunacion, PROMOCION_SALUD, DERIVACION, ACTIVIDADES_ASISTENCIALES, OBSERVACIONES_GENERALES
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
+                      ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
+                      ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
+                      ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
+                      ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', data)
+            
             conn.commit()
             conn.close()
             flash('Registro guardado exitosamente.', 'success')
+            
         except Exception as e:
             flash(f'Error al guardar: {e}', 'danger')
+            
         return redirect(url_for('formulario.formulario'))
-        #return redirect('/')
+
+    # Si es GET, mostrar formulario con registros
     usua = session['usuario']
-    hoy = date.today().isoformat()  # formato YYYY-MM-DD
+    hoy = date.today().isoformat()
+    
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
     c.execute("""
@@ -155,16 +118,21 @@ def formulario():
     conn.close()
 
     return render_template('formulario.html', registros=registros)
-        
+
 @bp.route('/exportar', methods=['GET'])
 def exportar():
-        fecha_inicio = request.args.get('fecha_inicio')
-        fecha_fin = request.args.get('fecha_fin')
+    if 'usuario' not in session:
+        flash('Debes iniciar sesión', 'error')
+        return redirect(url_for('auth.login'))
+        
+    fecha_inicio = request.args.get('fecha_inicio')
+    fecha_fin = request.args.get('fecha_fin')
 
-        if not fecha_inicio or not fecha_fin:
-            flash("Debes seleccionar un rango de fechas.", "warning")
-            return redirect(url_for('formulario.formulario'))  # ajusta según tu formulario
+    if not fecha_inicio or not fecha_fin:
+        flash("Debes seleccionar un rango de fechas.", "warning")
+        return redirect(url_for('formulario.formulario'))
 
+    try:
         excel_output, mensaje = generar_excel(fecha_inicio, fecha_fin)
 
         if not excel_output:
@@ -177,6 +145,6 @@ def exportar():
             as_attachment=True,
             mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         )
-    
-    
-   
+    except Exception as e:
+        flash(f'Error al exportar: {e}', 'danger')
+        return redirect(url_for('formulario.formulario'))
