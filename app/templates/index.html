@@ -43,9 +43,9 @@
     {% endwith %}
 
     <!-- Formulario de carga -->
-{% if logged_in %}
-    {% if es_admin %}
-        <form action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data">    
+{% if session.usuario %}
+    {% if session.rol == 'admin' %}
+        <form action="{{ url_for('formatos.upload') }}" method="post" enctype="multipart/form-data">    
             <div class="mb-3">
                 <label>Nombre del Formato:</label>
                 <input type="text" name="nombre_formato" class="form-control" required>
@@ -99,7 +99,9 @@
             <button type="submit" class="btn btn-primary">Buscar</button>
             <a href="/" class="btn btn-secondary">Limpiar</a>
             <button type="button" class="btn btn-outline-dark" onclick="window.print()">Imprimir tabla</button>
-	    <a href="http://192.168.100.100:5000" target="_blank">ir a Hoja de Enfermeria</a>	
+            <a href="{{ url_for('formulario.formulario') }}" class="btn btn-primary">Ir al Consulta Enfermería</a>
+
+	    
         </div>
     </form>
 
