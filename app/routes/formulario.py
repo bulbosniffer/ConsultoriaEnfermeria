@@ -1,12 +1,14 @@
-from flask import Blueprint, render_template, request, redirect, session, flash, url_for
+from flask import Blueprint, render_template, request, redirect, session, flash, url_for,send_file
 from app.utils.validaciones import campos_validos
 from app.utils.db import DB_NAME
+from ..utils.exportador import generar_excel
 import sqlite3
 from datetime import date
 
 bp = Blueprint('formulario', __name__)
 
-@bp.route('/formulario', methods=['GET', 'POST'])
+
+@bp.route('/formulario')
 def formulario():
     if 'usuario' not in session:
         flash('Debes iniciar sesión', 'error')
@@ -154,7 +156,27 @@ def formulario():
 
     return render_template('formulario.html', registros=registros)
         
+@bp.route('/exportar', methods=['GET'])
+def exportar():
+        fecha_inicio = request.args.get('fecha_inicio')
+        fecha_fin = request.args.get('fecha_fin')
 
+        if not fecha_inicio or not fecha_fin:
+            flash("Debes seleccionar un rango de fechas.", "warning")
+            return redirect(url_for('formulario.formulario'))  # ajusta según tu formulario
+
+        excel_output, mensaje = generar_excel(fecha_inicio, fecha_fin)
+
+        if not excel_output:
+            flash(mensaje, "danger")
+            return redirect(url_for('formulario.formulario'))
+
+        return send_file(
+            excel_output,
+            download_name=mensaje,
+            as_attachment=True,
+            mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
     
     
    

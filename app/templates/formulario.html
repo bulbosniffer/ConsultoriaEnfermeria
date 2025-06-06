@@ -605,15 +605,24 @@
     </script>
     <div id="preview" style="white-space: pre-wrap; margin-top: 1em; border: 1px solid #ccc; padding: 10px;"></div>
     <form action="/exportar" method="GET" class="mt-3">
-        <label>Fecha inicio:</label>
-        <input type="date" name="fecha_inicio" required>
+        <label for="fecha_inicio">Fecha inicio:</label>
+        <input type="date" id="fecha_inicio" name="fecha_inicio" required>
 
-        <label>Fecha fin:</label>
-        <input type="date" name="fecha_fin" required>
+        <label for="fecha_fin">Fecha fin:</label>
+        <input type="date" id="fecha_fin" name="fecha_fin" required>
 
         <button class="btn btn-success" type="submit">Exportar Excel</button>
+        
     </form>
-   
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const fechaInicio = document.getElementById('fecha_inicio');
+            const fechaFin = document.getElementById('fecha_fin');
+            fechaInicio.addEventListener('change', () => {
+            fechaFin.min = fechaInicio.value;
+        });
+    });
+    </script>
 
     <h2 class="mt-5">Registros Capturados</h2>
     <table class="table table-bordered">
