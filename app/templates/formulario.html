@@ -30,16 +30,24 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
           </div>
         {% endfor %}
-      </div>
+      
     {% endif %}
   {% endwith %}
-    <h2 class="mb-4">Hola, {{ session['usuario'] }}!</h2>
-    <p>Bienvenido al panel de usuario.</p>
-    <a href="{{ url_for('formatos.formatos') }}">
-        <button class="btn btn-primary mt-3">Ir a Formatos</button></a>
-    <a href="{{ url_for('auth.logout') }}">Cerrar sesión</a>		
-    <h2 class="mb-4">Hoja de Consultoria de Enfermeria</h2>
-    <form method="POST" class="row g-3">
+    <div class="col">
+        <h2 class="col-md-6">Hola, {{ session['usuario'] }}!</h2>
+        <p>Bienvenido al panel de usuario.</p>
+    </div>
+    <div class="d-flex justify-content-end gap-3 mt-1 col">
+        
+            <a href="{{ url_for('formatos.formatos') }}" class="btn btn-primary">
+                Ir a Formatos
+            </a>
+            <a href="{{ url_for('tutorial.tutorial') }}">
+                <button class="btn btn-info">📘 Ver Tutorial</button>
+            </a>
+           
+    </div>
+        <form method="POST" class="row g-3">
         <fieldset class="border p-3 mb-3">
             <legend class="w-auto px-2">Datos de la Unidad</legend>
             <div class="row g-3">
@@ -70,12 +78,65 @@
         <fieldset class="border p-3 mb-3">
             <legend class="w-auto px-2">Datos del Paciente</legend>
              <div class="row g-3">
-            <div class="col-md-6">
-                <label>Nombre del Paciente</label><input class="form-control" name="paciente">
+            <div class="row">
+                <div class="col-md-6">
+                    <label>Nombre del Paciente</label>
+                    <input class="form-control" name="paciente" id="paciente">
+                </div>
+                <div class="col-md-6">
+                    <label>Nombre del Jefe de Familia</label>
+                    <input class="form-control" name="nombre_jefe_fam" id="nombre_jefe_fam">
+                </div>
             </div>
-            <div class="col-md-6">
-                <label>Nombre del Jefe de Familia</label><input class="form-control" name="nombre_jefe_fam">
-            </div>
+
+            <div id="alertas" class="mt-3"></div>
+
+            <script>
+                function mostrarAlertaConfirmacion(mensaje, onYes, onNo) {
+                    const alerta = $(`
+                        <div class="alert alert-warning alert-dismissible fade show mt-2" role="alert">
+                            ${mensaje}
+                            <div class="mt-2">
+                                <button type="button" class="btn btn-sm btn-success me-2">Sí</button>
+                                <button type="button" class="btn btn-sm btn-danger">No</button>
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                        </div>
+                    `);
+
+                    alerta.find('.btn-success').on('click', function () {
+                        alerta.alert('close');
+                        if (onYes) onYes();
+                    });
+
+                    alerta.find('.btn-danger').on('click', function () {
+                        alerta.alert('close');
+                        if (onNo) onNo();
+                    });
+
+                    $('#alertas').append(alerta);
+
+                    // Auto cerrar en 10 segundos si no hay respuesta
+                    setTimeout(() => alerta.alert('close'), 10000);
+                }
+
+                document.getElementById("paciente").addEventListener("blur", function () {
+                    const nombrePaciente = this.value.trim();
+                    if (nombrePaciente === "") return;
+
+                    mostrarAlertaConfirmacion(
+                        "¿El paciente es el mismo que el jefe de familia?",
+                        () => {
+                            // Sí
+                            document.getElementById("nombre_jefe_fam").value = nombrePaciente;
+                        },
+                        () => {
+                            // No
+                            document.getElementById("nombre_jefe_fam").focus();
+                        }
+                    );
+                });
+            </script>
             <div class="col-md-3">
                 <label>Sexo</label>
                 <select class="form-select" name="sexo">
@@ -89,20 +150,40 @@
                 <label class="form-label">Edad:</label>
                 <input class="form-control" type="number" name="edad" id="edad" readonly>
             </div>
-            <script>
-                document.getElementById("fecha_nacimiento").addEventListener("change", function() {
-                const fechaNacimiento = new Date(this.value);
-                const hoy = new Date();
-                let edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
-                const mes = hoy.getMonth() - fechaNacimiento.getMonth();
+                <script>
+                    document.getElementById("fecha_nacimiento").addEventListener("change", function () {
+                    const fechaNacimiento = new Date(this.value);
+                    const hoy = new Date();
+                    let edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
+                    const mes = hoy.getMonth() - fechaNacimiento.getMonth();
 
-            // Si aún no ha cumplido años este año
-                if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
-                    edad--;
-                }
+                    // Si aún no ha cumplido años este año
+                    if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
+                        edad--;
+                    }
 
-                document.getElementById("edad").value = isNaN(edad) ? "" : edad ;
+                    // Mostrar edad en el campo
+                    document.getElementById("edad").value = isNaN(edad) ? "" : edad;
+
+                    // Llamar a la función para seleccionar el grupo de edad
+                    SeleccionarGrupoEdad(edad);
                 });
+
+                function SeleccionarGrupoEdad(edad) {
+                    const select = document.getElementById('DG_GRUPOS_EDAD');
+
+                    if (edad < 10) {
+                        select.value = "1";  // 0 a 9 años
+                    } else if (edad >= 10 && edad < 20) {
+                        select.value = "2";  // 10 a 19 años
+                    } else if (edad >= 20 && edad < 60) {
+                        select.value = "3";  // 20 a 59 años
+                    } else if (edad >= 60) {
+                        select.value = "4";  // 60 años o más
+                    } else {
+                        select.value = "";  // en caso de edad inválida
+                    }
+                }
             </script>
             <div class="col-md-8">
                 <label>Domicilio</label><input class="form-control" name="domicilio">
@@ -127,7 +208,11 @@
                     <div class="col ">
                         <input type="number" id="ta_diastolica" name="ta_diastolica" class="form-control" placeholder="Diastólica (ej. 80)">
                     </div>
-                </div>
+		 </div>
+		 <div class="col ">
+                    	<label>Glucosa:</label>
+                    	<input type="number" step="1" min="0" id="glucosa" name="glucosa" class="form-control text-center" placeholder="Ej: 101">
+                    </div>	
                 <div class="col ">
                     <label>Frecuencia Cardiaca:</label>
                     <input type="number" step="0.1" min="0" id="fc" name="fc" class="form-control text-center" placeholder="75" min="0" max="200"> <small class="text-muted">latidos por minuto</small>
@@ -304,7 +389,7 @@
                 </select>
             </div>
             <div class="col-md-6">
-                <label>Grupo de Edad</label><select class="form-select" name="DG_GRUPOS_EDAD">
+                <label>Grupo de Edad</label><select class="form-select" id="DG_GRUPOS_EDAD" name="DG_GRUPOS_EDAD">
                     <option value="1">0 - 9 años</option>
                     <option value="2">10 a 19 años</option>
                     <option value="3">20 a 59 años</option>
@@ -325,7 +410,7 @@
                  <select class="form-select" name="CONSEJERIA_PF">
                     <option value="1">Si</option>
                     <option value="2">No</option>
-                    
+		    <option value="3">No Aplica</option>
                 </select> 
             </div>
             </div>
@@ -397,22 +482,23 @@
             </div>
             
             <script>
-                const campos = ["peso", "talla", "ta_sistolica", "ta_diastolica", "fc", "fcr", "temperatura", "spo2", "imc"];
+                const campos = ["peso", "talla", "ta_sistolica", "ta_diastolica", "glucosa", "fc", "fcr", "temperatura", "spo2", "imc"];
 
                 function actualizarResumen() {
                     let peso = parseFloat(document.getElementById("peso").value) || 0;
                     let talla = parseInt(document.getElementById("talla").value) || 0;
                     let sistolica = parseInt(document.getElementById("ta_sistolica").value) || 0;
                     let diastolica = parseInt(document.getElementById("ta_diastolica").value) || 0;
-                    let ta = `${sistolica}/${diastolica}`;
-                    let fc = parseInt(document.getElementById("fc").value) || 0;
+		    let ta = `${sistolica}/${diastolica}`;
+                    let glucosa = parseInt(document.getElementById("glucosa").value) || 0;
+   		    let fc = parseInt(document.getElementById("fc").value) || 0;
                     let fcr = parseInt(document.getElementById("fcr").value) || 0;
                     let circonferencia = parseInt(document.getElementById("circo").value) || 0;
                     let temperatura = parseFloat(document.getElementById("temperatura").value) || 0;
                     let spo2 = parseInt(document.getElementById("spo2").value) || 0;
                     let imc = parseFloat(document.getElementById("imc").value) || 0;
 
-                    let resumen = `PESO:${peso}KG TALLA:${talla}CM T/A:${ta} FC:${fc}X´ FCR:${fcr}X´  T:${temperatura}°C C:${circonferencia}CM SPO2:${spo2}% IMC:${imc}`;
+                    let resumen = `PESO:${peso}KG TALLA:${talla}CM T/A:${ta} GLU:${glucosa} FC:${fc}X´ FCR:${fcr}X´  T:${temperatura}°C C:${circonferencia}CM SPO2:${spo2}% IMC:${imc}`;
                     document.getElementById("observaciones").value = resumen;
                 }
 
@@ -432,6 +518,7 @@
                     <option value="1">Tamiz metabólico </option>
                     <option value="2">Tamiz auditivo</option>
                     <option value="3">Otro</option>
+		    <option value="4">No Aplica</option>
                 </select> 
             </div>
         </fieldset>
@@ -469,6 +556,7 @@
                  <select class="form-select" name="EDA_SOBRES_DE_HIDRATACION_ORAL_ENTREGADOS">
                     <option value="1">Si</option>
                     <option value="2">No</option>
+		    <option value="3">No Aplica</option>
                 </select> 
             </div>
              <div class="col-md-4">
@@ -476,6 +564,7 @@
                  <select class="form-select" name="EDA_MADRES_CAPACITADAS_MANEJO">
                     <option value="1">Si</option>
                     <option value="2">No</option>
+		    <option value="3">No Aplica</option>
                 </select> 
             </div>
         </fieldset>
@@ -486,6 +575,7 @@
                  <select class="form-select" name="IRA_MADRES_CAPACITADAS_MANEJO">
                     <option value="1">Si</option>
                     <option value="2">No</option>
+		    <option value="3">No Aplica</option>
                 </select> 
             </div>
         </fieldset>
@@ -499,33 +589,45 @@
                     <option value="2">45 a 59 años</option>
                     <option value="3">60 años y mas</option>
                     <option value="4">Adolecentes con obesidad</option>
+		    <option value="5">No Aplica</option>
                 </select> 
             </div>
             <div class="col-md-4">
                 <label>Detección Enfermedades Crónicas</label><select class="form-select" name="DETECCION_ENFERMEDADES_CRONICAS">
                     <option value="1">Primera vez</option>
-                    <option value="2">Subsecuente</option></select>
+                    <option value="2">Subsecuente</option>
+		    <option value="3">No Aplica</option>
+		</select>
             </div>
             <div class="col-md-4">
-                <label>Diabetes</label><select class="form-select" name="DIABETES_MELLITUS">
-                    <option value="1">Normal</option>
-                    <option value="2">Anormal</option></select>
+                <label>Diabetes</label>
+		    <select class="form-select" name="DIABETES_MELLITUS">
+                    	<option value="1">Normal</option>
+                    	<option value="2">Anormal</option>
+			<option value="3">No Aplica</option>
+		    </select>
             </div>
             <div class="col-md-4">
                 <label>Dislipidemia</label><select class="form-select" name="DISLIPIDEMIA">
                     <option value="1">Normal</option>
-                    <option value="2">Anormal</option></select>
+                    <option value="2">Anormal</option>
+		    <option value="3">No Aplica</option>
+		</select>
             </div>
             <div class="col-md-4">
-                <label>Hipertensión</label><select class="form-select" name="hipertension">
+                <label>Hipertensión</label>
+		<select class="form-select" name="hipertension">
                     <option value="1">Normal</option>
-                    <option value="2">Anormal</option></select>
+                    <option value="2">Anormal</option>
+		    <option value="3">No Aplica</option>
+		</select>
             </div>
             <div class="col-md-4">
                 <label>Revisión Integral De La Piel De Miembros Inferiores</label>
                  <select class="form-select" name="REVISION_INTEGRAL_PIEL_MIEMBROS_INFERIORES">
                     <option value="1">Si</option>
                     <option value="2">No</option>
+		    <option value="3">No Aplica</option>
                 </select>
             </div>
             <div class="col-md-4">
@@ -533,6 +635,7 @@
                  <select class="form-select" name="DIABETICOS_INFORMADOS_CUIDADOS_PIES">
                     <option value="1">Si</option>
                     <option value="2">No</option>
+		    <option value="3">No Aplica</option>
                 </select>
             </div>
             <div class="col-md-4">
@@ -565,6 +668,7 @@
                     <option value="4">SAISME</option>
                     <option value="5">CASA</option>
                     <option value="6">OTRO</option>
+		    <option value="7">No Aplica</option>
                  </select>
             </div>
             <div class="col-md-4">
@@ -575,6 +679,7 @@
                     <option value="3">Venoclisis</option>
                     <option value="4">Colocacion de Sondas</option>
                     <option value="5">Otras</option>
+		    <option value="6">No Aplica</option>
                  </select>
             </div>
             <div class="col-md-12">

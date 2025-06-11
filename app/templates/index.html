@@ -124,17 +124,25 @@
                 <td>{{ a['filename'] }}</td>
                 <td>{{ a['fecha_subida'] }}</td>
                 <td>
-                    {% if a['filename'].endswith('.pdf') %}
-                        <a href="{{ url_for('static', filename='uploads/' + a['filename']) }}" target="_blank" class="btn btn-outline-primary btn-sm">Ver / Imprimir</a>
-                    {% endif %}
-                    <a href="/download/{{ a['filename'] }}" class="btn btn-success btn-sm">Descargar</a>
-                    {% if logged_in %}
-                        <form action="{{ url_for('delete_file_post', id=a['id']) }}" method="post" style="display:inline;">
-                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Eliminar este archivo?');">
-                                 Eliminar
-                             </button>
-</form>
-                    {% endif %}
+                    <div class="btn-group" role="group" aria-label="Acciones archivo">
+                        {% if a['filename'].endswith('.pdf') %}
+                            <a href="{{ url_for('static', filename='uploads/' + a['filename']) }}" target="_blank" class="btn btn-outline-primary btn-sm">
+                                Ver / Imprimir
+                            </a>
+                        {% endif %}
+                        
+                        <a href="/download/{{ a['filename'] }}" class="btn btn-success btn-sm">
+                            Descargar
+                        </a>
+
+                        {% if session.get('usuario') and session.get('rol') == 'admin' %}
+                            <form action="{{ url_for('formatos.delete_file', file_id=a['id']) }}" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Eliminar este archivo?');">
+                                    Eliminar
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
                 </td>
             </tr>
             {% endfor %}
