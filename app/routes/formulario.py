@@ -134,6 +134,18 @@ def exportar():
     except Exception as e:
         flash(f'Error al exportar: {e}', 'danger')
         return redirect(url_for('formulario.formulario'))
-@app.route('/modificar/<int:id>', methods=['GET', 'POST'])
-def modificar(id):
-    
+
+@bp.app.route('/consultar', methods=['GET', 'POST'])
+def consultar():
+    resultados = []
+    if request.method == 'POST':
+        nombre = request.form.get('nombre')
+        resultados = RegistroAdultoMayor.query.filter(
+            RegistroAdultoMayor.paciente.ilike(f"%{nombre}%")
+        ).all()
+    return render_template('consulta_nombre.html', resultados=resultados)
+
+@bp.app.route('/detalle/<int:registro_id>')
+def detalle(registro_id):
+    registro = RegistroAdultoMayor.query.get_or_404(registro_id)
+    return render_template('detalle.html', registro=registro)

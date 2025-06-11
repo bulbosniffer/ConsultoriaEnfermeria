@@ -1,0 +1,18 @@
+<!-- app/templates/detalle.html -->
+{% extends "base.html" %}
+{% block content %}
+<h2>Detalle del Registro</h2>
+
+<table class="table table-striped">
+    <tr><th>Nombre:</th><td>{{ registro.paciente }}</td></tr>
+    <tr><th>Edad:</th><td>{{ registro.edad }}</td></tr>
+    <tr><th>Sexo:</th><td>{{ registro.sexo }}</td></tr>
+    <tr><th>Domicilio:</th><td>{{ registro.domicilio }}</td></tr>
+    <tr><th>Diagnóstico Nutricional:</th><td>{{ registro.diagnostico_nutricional }}</td></tr>
+    <tr><th>Consultoría Otorgada:</th><td>{{ registro.consultoria_otorgada }}</td></tr>
+    <tr><th>Observaciones:</th><td>{{ registro.OBSERVACIONES_GENERALES }}</td></tr>
+    <!-- Agrega más campos según necesites -->
+</table>
+
+<a href="{{ url_for('consultar') }}" class="btn btn-secondary">Volver</a>
+{% endblock %}
