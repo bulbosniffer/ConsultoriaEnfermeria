@@ -134,3 +134,6 @@ def exportar():
     except Exception as e:
         flash(f'Error al exportar: {e}', 'danger')
         return redirect(url_for('formulario.formulario'))
+@app.route('/modificar/<int:id>', methods=['GET', 'POST'])
+def modificar(id):
+    
