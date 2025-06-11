@@ -135,7 +135,7 @@ def exportar():
         flash(f'Error al exportar: {e}', 'danger')
         return redirect(url_for('formulario.formulario'))
 
-@bp.app.route('/consultar', methods=['GET', 'POST'])
+@bp.route('/consultar', methods=['GET', 'POST'])
 def consultar():
     resultados = []
     if request.method == 'POST':
@@ -145,7 +145,7 @@ def consultar():
         ).all()
     return render_template('consulta_nombre.html', resultados=resultados)
 
-@bp.app.route('/detalle/<int:registro_id>')
+@bp.route('/detalle/<int:registro_id>')
 def detalle(registro_id):
     registro = RegistroAdultoMayor.query.get_or_404(registro_id)
     return render_template('detalle.html', registro=registro)

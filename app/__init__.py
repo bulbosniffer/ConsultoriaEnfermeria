@@ -16,7 +16,7 @@ def create_app():
     app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-    from .routes import auth, admin, formulario, formatos, tutorial
+    from app.routes import auth, admin, formulario, formatos, tutorial
     app.register_blueprint(auth.bp)
     app.register_blueprint(admin.bp)
     app.register_blueprint(formulario.bp)
