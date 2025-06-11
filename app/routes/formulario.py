@@ -1,4 +1,6 @@
-from flask import Blueprint, render_template, request, redirect, session, flash, url_for, send_file
+from flask import Blueprint, jsonify, render_template, request, redirect, session, flash, url_for, send_file
+from sqlalchemy import extract
+from sqlalchemy.sql.functions import current_user
 from app.utils.validaciones import campos_validos
 from app.models import RegistroAdultoMayor
 from app.utils.db import db
@@ -149,3 +151,14 @@ def consultar():
 def detalle(registro_id):
     registro = RegistroAdultoMayor.query.get_or_404(registro_id)
     return render_template('detalle.html', registro=registro)
+
+@bp.route('/api/total_capturados_mes', methods=['GET', 'POST'])
+def total_capturados_mes():
+    usua = session['usuario']
+    hoy = datetime.now()
+    total = RegistroAdultoMayor.query.filter(
+        extract('month', RegistroAdultoMayor.fecha) == hoy.month,
+        extract('year', RegistroAdultoMayor.fecha) == hoy.year,
+        RegistroAdultoMayor.personal_enfermeria==usua
+    ).count()
+    return jsonify({'total': total})
