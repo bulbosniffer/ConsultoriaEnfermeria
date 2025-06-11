@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block contenido %}
+<div class="container mt-5">
+  <div class="text-center mb-4">
+   <img src="{{ url_for('static', filename='logo/imss-logo.png') }}" alt="Logo" width="120">
+    <h2 class="mt-3">📘 Guía de Uso - Consultoría de Enfermería</h2>
+  </div>
+
+  <div class="mb-4 text-end">
+    <a href="{{ url_for('formatos.formatos') }}" class="btn btn-primary">
+      <i class="bi bi-folder2-open"></i> Ir a Formatos
+    </a>
+     <a href="{{ url_for('formulario.formulario') }}" class="btn btn-primary">Ir al Consulta Enfermería</a>
+  </div>
+
+  <section class="mb-4">
+    <h4>📖 Justificación de la Aplicación</h4>
+    <p>
+      Esta aplicación fue desarrollada debido a la necesidad de concentrar mensualmente la información de las consultas de enfermería. 
+      Anteriormente, esta tarea se realizaba mediante hojas de Excel individuales por cada personal, pero en los equipos disponibles no se cuenta con Microsoft Office, sino con OpenOffice, 
+      el cual no ejecuta correctamente las macros necesarias para automatizar el trabajo. 
+      Esta plataforma soluciona ese problema centralizando la información de forma segura y accesible.
+    </p>
+  </section>
+
+  <section class="mb-5">
+    <h4>1. ⚖️ Ingreso a la plataforma</h4>
+    <p>
+      Accede desde: <a href="https://consultoriaenfermeria.onrender.com" target="_blank">consultoriaenfermeria.onrender.com</a><br>
+      <i class="bi bi-person-check"></i> Inicia sesión con tu usuario y contraseña.
+    </p>
+  </section>
+
+  <section class="mb-5">
+    <h4>2. 🔍 Navegación general</h4>
+    <ul>
+      <li><i class="bi bi-house-door"></i> <strong>Inicio</strong>: Bienvenida al sistema.</li>
+      <li><i class="bi bi-journal-plus"></i> <strong>Registrar consulta</strong>: Llenar hoja de consultoría.</li>
+      <li><i class="bi bi-folder2-open"></i> <strong>Formatos</strong>: Ver/subir/eliminar documentos.</li>
+      <li><i class="bi bi-box-arrow-right"></i> <strong>Cerrar sesión</strong></li>
+    </ul>
+  </section>
+
+  <section class="mb-5">
+    <h4>3. 📅 Registrar hoja de consultoría</h4>
+    <ol>
+      <li>Llenar los datos del paciente.</li>
+      <li>La <strong>edad</strong> se calcula automáticamente desde la fecha de nacimiento.</li>
+      <li>Se asigna el <strong>grupo etario</strong> según la edad.</li>
+      <li>Si el paciente es también jefe de familia, el nombre se copia automáticamente.</li>
+    </ol>
+    <img src="{{ url_for('static', filename='img/registro_consulta.png') }}" class="img-fluid rounded border mt-3" alt="Registro de consulta">
+  </section>
+
+  
+  <section class="mb-5">
+    <h4>5. 🚀 Funcionalidades automáticas</h4>
+    <ul>
+      <li>Cálculo automático de edad.</li>
+      <li>Selección automática del grupo etario.</li>
+      <li>Copiado inteligente si el jefe de familia es el mismo paciente.</li>
+      <li>Alertas visuales amigables.</li>
+    </ul>
+  </section>
+
+  
+  <section class="mb-5">
+    <h4>7. 🧰 Preguntas frecuentes</h4>
+    <ul>
+      <li><strong>¿Puedo editar un registro?</strong> No, solo puedes eliminarlo y volver a ingresarlo.</li>
+      <li><strong>¿Funciona en celular?</strong> Sí, la app es responsiva y está optimizada para móviles.</li>
+    </ul>
+  </section>
+
+  <section class="mb-5">
+    <h4>8. 📧 Soporte</h4>
+    <p>
+      Para dudas, errores o sugerencias que enriquezcan esta aplicación, contáctanos:
+      <strong>belisario.dominguez.calidad@gmail.com</strong>
+    </p>
+  </section>
+</div>
+{% endblock %}
