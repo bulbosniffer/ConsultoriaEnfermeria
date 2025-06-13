@@ -142,8 +142,9 @@
             </script>
             <div class="col-md-3">
                 <label>Sexo</label>
-                <select class="form-select" name="sexo">
-                    <option value="F">Femenino</option><option value="M">Masculino</option>
+                <select class="form-select" id="sexo" name="sexo" >
+                    <option value="F">Femenino</option>
+                    <option value="M">Masculino</option>
                 </select>
             </div>
             <div class="col-md-4">
@@ -157,24 +158,33 @@
                     document.getElementById("fecha_nacimiento").addEventListener("change", function () {
                     const fechaNacimiento = new Date(this.value);
                     const hoy = new Date();
+
                     let edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
                     const mes = hoy.getMonth() - fechaNacimiento.getMonth();
 
-                    // Si aún no ha cumplido años este año
                     if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
                         edad--;
                     }
+                    
 
-                    // Mostrar edad en el campo
-                    document.getElementById("edad").value = isNaN(edad) ? "" : edad;
+                    console.log("EDAD CALCULADA:", edad);
+                    
 
                     // Llamar a la función para seleccionar el grupo de edad
+                   
                     SeleccionarGrupoEdad(edad);
+                    SeleccionarGrupoEdadEmbarazadas(edad);
+                    SelecionarPfEdad(edad);
+                    SelecionarTamiz(edad);
+                    SelecionarHIDRATACION_ORAL(edad);
+                    SelecionarEDA_MADRES(edad);
+                    SelecionarIRA_MADRES(edad);
+                    Selecionargrupo_riesgo(edad);
+                    document.getElementById("edad").value = isNaN(edad) ? "" : edad;
                 });
-
                 function SeleccionarGrupoEdad(edad) {
                     const select = document.getElementById('DG_GRUPOS_EDAD');
-
+                    console.log("EDAD ENVIADA:", edad);
                     if (edad < 10) {
                         select.value = "1";  // 0 a 9 años
                     } else if (edad >= 10 && edad < 20) {
@@ -187,6 +197,108 @@
                         select.value = "";  // en caso de edad inválida
                     }
                 }
+                function SeleccionarGrupoEdadEmbarazadas(edad) {
+                        const selecti = document.getElementById("VI_EMB_grupo_edad");
+                        const select = document.getElementById("VI_EMB_TRIMESTRE_GESTACIONAL");
+                        const selecta = document.getElementById("VI_EMB_ACCIONES_IRREDUCTIBLES");
+                        const selectGINECO_DETECCION = document.getElementById("SALUD_GINECO_DETECCION");
+                        const sexoPaciente = document.getElementById("sexo").value.trim();
+                        
+                    if (sexoPaciente === "M") {
+                            selecti.value = "5";  // No aplica
+                            select.value="4";
+                            selecta.value="6";
+                            selectGINECO_DETECCION.value="3";
+                        return;
+                    }else{
+                         if (edad < 15) {
+                            selecti.value = "1";
+                        } else if (edad >= 15 && edad < 20) {
+                            selecti.value = "2";  // 15 a 19 años
+                        } else if (edad >= 20 && edad < 34) {
+                            selecti.value = "3";  // 20 a 34 años
+                        } else if (edad >= 35) {
+                            selecti.value = "4";  // 35 años o más
+                        }
+                    }
+                }
+                function SelecionarPfEdad(edad) {
+                        const select = document.getElementById("PF_GRUPOS_EDAD");
+                        console.log("EDAD ENVIADA2:", edad);
+                        if (edad < 20) {
+                            select.value = "1";  // menor a 20 años
+                        } else if (edad > 20 ) {
+                            select.value = "2";  // mayor a 20 años
+                        }
+                       
+                }
+                function SelecionarTamiz(edad) {
+                        const select = document.getElementById("DETECCION_TAMIZ");
+                        if (edad >= 1) { // mayor a un año no aplica, debe ser menor a un año
+                            select.value = "4";  // menor a 20 años
+                        } 
+                       
+                } 
+                 function SelecionarHIDRATACION_ORAL(edad) {
+                        const select = document.getElementById("EDA_SOBRES_DE_HIDRATACION_ORAL_ENTREGADOS");
+                        console.log("EDAD ENVIADA4:", edad);
+                        if (edad > 5) { // mayor a un 5 años no aplica, debe ser menor a 5 año
+                            select.value = "3";  // no aplica
+                        }else{
+                            select.value = "1"; 
+                        }
+                       
+                }
+                function SelecionarEDA_MADRES(edad) {
+                        const select = document.getElementById("EDA_MADRES_CAPACITADAS_MANEJO");
+                        if (edad > 5) { // mayor a un 5 años no aplica, debe ser menor a 5 año
+                            select.value = "3";  // no aplica
+                        } else{
+                            select.value = "1"; 
+                        }
+                       
+                }                    
+                function SelecionarIRA_MADRES(edad) {
+                        const select = document.getElementById("IRA_MADRES_CAPACITADAS_MANEJO");
+                        if (edad > 5) { // mayor a un 5 años no aplica, debe ser menor a 5 año
+                            select.value = "3";  // no aplica
+                        } else{
+                            select.value = "1"; 
+                        }
+                       
+                }
+                function Selecionargrupo_riesgo(edad) {
+                        const select = document.getElementById("grupo_riesgo");
+                        if (edad <19 ) {
+                            select.value = "5";  // no aplica
+                        }else if (edad > 19 && edad<=44) { //MAYOR A 19 AÑOS FACTOR DE RIESGO
+                            select.value = "1"; 
+                        } else if  (edad > 44 && edad <= 59) {
+                            select.value = "2";                           
+                        }else if (edad>60) {
+                            select.value = "3"; 
+                        }
+                             
+                        const selecti = document.getElementById("DETECCION_ENFERMEDADES_CRONICAS");
+                        const selectDIABETES = document.getElementById("DIABETES_MELLITUS");
+                        const selecta = document.getElementById("DISLIPIDEMIA");
+                        const selecthipertension = document.getElementById("hipertension");
+                        const selectMIEMBROS_INFERIORES = document.getElementById("REVISION_INTEGRAL_PIEL_MIEMBROS_INFERIORES");
+                        const selectCUIDADOS_PIES = document.getElementById("DIABETICOS_INFORMADOS_CUIDADOS_PIES");
+                        const grupo_riesgo = document.getElementById("grupo_riesgo").value.trim();
+                        
+                        if (grupo_riesgo === "5") {
+                            selecti.value="3";
+                            selectDIABETES.value="3";
+                            selecta.value="3";
+                            selecthipertension.value="3";
+                            selectMIEMBROS_INFERIORES.value="3";
+                            selectCUIDADOS_PIES.value="3";
+                        
+                        }
+
+                }
+
             </script>
             <div class="col-md-8">
                 <label>Domicilio</label><input class="form-control" name="domicilio">
@@ -423,7 +535,7 @@
             <legend class="w-auto px-1">(PRIMER NIVEL)</legend>
             <div class="col-md-4">
                 <label>Grupos De Edad En Años</label>
-                 <select class="form-select" name="PF_GRUPOS_EDAD">
+                 <select class="form-select" id="PF_GRUPOS_EDAD" name="PF_GRUPOS_EDAD">
                     <option value="1">Menor a 20</option>
                     <option value="2">20 años y más</option>
                     <option value="3">No Aplica</option>
@@ -434,7 +546,7 @@
                  <select class="form-select" name="PF_SUBSECUENTE">
                     <option value="1">Primera vez</option>
                     <option value="2">Subsecuente</option>
-                    <option value="3">Otro</option>
+                    <option value="3">No aplica</option>
                 </select> 
             </div> 
             <div class="col-md-4">
@@ -455,8 +567,8 @@
             <legend class="w-auto px-1">Atención materno infantil-Vigilancia de las embarazadas</legend>
             <div class="col-md-4">
                 <label>Grupos De Edad En Años</label>
-                 <select class="form-select" name="VI_EMB_grupo_edad">
-                     <option value="1">Menor a 15</option>
+                 <select class="form-select" id="VI_EMB_grupo_edad" name="VI_EMB_grupo_edad" >
+                    <option value="1">Menor a 15</option>
                     <option value="2">15 a 19 años</option>
                     <option value="3">20 a 34 años</option>
                     <option value="4">35 años y más</option>
@@ -465,7 +577,7 @@
             </div> 
             <div class="col-md-4">
                 <label>Trimestre Gestacional </label>
-                 <select class="form-select" name="VI_EMB_TRIMESTRE_GESTACIONAL">
+                 <select class="form-select" id="VI_EMB_TRIMESTRE_GESTACIONAL" name="VI_EMB_TRIMESTRE_GESTACIONAL">
                     <option value="1">Primer Trimestre</option>
                     <option value="2">Segundo Trimistre</option>
                     <option value="3">Tercer Trimestre</option>
@@ -474,7 +586,7 @@
             </div> 
             <div class="col-md-4">
                 <label>Acciones Irreductibles</label>
-                 <select class="form-select" name="VI_EMB_ACCIONES_IRREDUCTIBLES">
+                 <select class="form-select" id="VI_EMB_ACCIONES_IRREDUCTIBLES" name="VI_EMB_ACCIONES_IRREDUCTIBLES">
                     <option value="1">Valoración de riesgo obstetricio.</option>
                     <option value="2">Identificación De signos de alarma.</option>
                     <option value="3">Prescripción De ácido folico/ fum. Ferroso.</option>
@@ -483,7 +595,6 @@
                     <option value="6">No Aplica</option>
                 </select> 
             </div>
-            
             <script>
                 const campos = ["peso", "talla", "ta_sistolica", "ta_diastolica", "glucosa", "fc", "fcr", "temperatura", "spo2", "imc"];
 
@@ -517,7 +628,7 @@
             <legend class="w-auto px-2"></legend>
              <div class="col-md-4">
                 <label>Detección</label>
-                 <select class="form-select" name="DETECCION_TAMIZ">
+                 <select class="form-select" id="DETECCION_TAMIZ" name="DETECCION_TAMIZ">
                     <option value="1">Tamiz metabólico </option>
                     <option value="2">Tamiz auditivo</option>
                     <option value="3">Otro</option>
@@ -545,7 +656,7 @@
             <legend class="w-auto px-2">Salud Ginecológica</legend>
              <div class="col-md-4">
                 <label>Detección</label>
-                 <select class="form-select" name="SALUD_GINECO_DETECCION">
+                 <select class="form-select" id="SALUD_GINECO_DETECCION" name="SALUD_GINECO_DETECCION">
                     <option value="1">Citología Cervical</option>
                     <option value="2">Exploración De Mama</option>
                     <option value="3">No aplica</option>
@@ -556,7 +667,7 @@
             <legend class="w-auto px-2">Enfermedad Diarreica Aguda menor de 5 Años</legend>
             <div class="col-md-4">
                 <label>Madres Capacitadas En Manejo</label>
-                 <select class="form-select" name="EDA_SOBRES_DE_HIDRATACION_ORAL_ENTREGADOS">
+                 <select class="form-select" id="EDA_SOBRES_DE_HIDRATACION_ORAL_ENTREGADOS" name="EDA_SOBRES_DE_HIDRATACION_ORAL_ENTREGADOS">
                     <option value="1">Si</option>
                     <option value="2">No</option>
 		    <option value="3">No Aplica</option>
@@ -564,7 +675,7 @@
             </div>
              <div class="col-md-4">
                 <label>Madres Capacitadas En Manejo</label>
-                 <select class="form-select" name="EDA_MADRES_CAPACITADAS_MANEJO">
+                 <select class="form-select" id="EDA_MADRES_CAPACITADAS_MANEJO" name="EDA_MADRES_CAPACITADAS_MANEJO">
                     <option value="1">Si</option>
                     <option value="2">No</option>
 		    <option value="3">No Aplica</option>
@@ -575,7 +686,7 @@
             <legend class="w-auto px-2">Infección Respiratoria Aguda menor de 5 Años</legend>
              <div class="col-md-4">
                 <label>Madres Capacitadas En Manejo</label>
-                 <select class="form-select" name="IRA_MADRES_CAPACITADAS_MANEJO">
+                 <select class="form-select" id="IRA_MADRES_CAPACITADAS_MANEJO" name="IRA_MADRES_CAPACITADAS_MANEJO">
                     <option value="1">Si</option>
                     <option value="2">No</option>
 		    <option value="3">No Aplica</option>
@@ -587,7 +698,7 @@
             <div class="row g-3">
              <div class="col-md-6">
                 <label>Grupo con/sin Factor de Riesgo</label>
-                 <select class="form-select" name="grupo_riesgo">
+                 <select class="form-select" ID="grupo_riesgo" name="grupo_riesgo">
                     <option value="1">20 a 44 años</option>
                     <option value="2">45 a 59 años</option>
                     <option value="3">60 años y mas</option>
@@ -596,7 +707,7 @@
                 </select> 
             </div>
             <div class="col-md-4">
-                <label>Detección Enfermedades Crónicas</label><select class="form-select" name="DETECCION_ENFERMEDADES_CRONICAS">
+                <label>Detección Enfermedades Crónicas</label><select class="form-select" ID="DETECCION_ENFERMEDADES_CRONICAS" name="DETECCION_ENFERMEDADES_CRONICAS">
                     <option value="1">Primera vez</option>
                     <option value="2">Subsecuente</option>
 		    <option value="3">No Aplica</option>
@@ -604,14 +715,14 @@
             </div>
             <div class="col-md-4">
                 <label>Diabetes</label>
-		    <select class="form-select" name="DIABETES_MELLITUS">
+		    <select class="form-select" id="DIABETES_MELLITUS" name="DIABETES_MELLITUS">
                     	<option value="1">Normal</option>
                     	<option value="2">Anormal</option>
 			<option value="3">No Aplica</option>
 		    </select>
             </div>
             <div class="col-md-4">
-                <label>Dislipidemia</label><select class="form-select" name="DISLIPIDEMIA">
+                <label>Dislipidemia</label><select class="form-select" id="DISLIPIDEMIA" name="DISLIPIDEMIA">
                     <option value="1">Normal</option>
                     <option value="2">Anormal</option>
 		    <option value="3">No Aplica</option>
@@ -619,7 +730,7 @@
             </div>
             <div class="col-md-4">
                 <label>Hipertensión</label>
-		<select class="form-select" name="hipertension">
+		<select class="form-select" id="hipertension" name="hipertension">
                     <option value="1">Normal</option>
                     <option value="2">Anormal</option>
 		    <option value="3">No Aplica</option>
@@ -627,7 +738,7 @@
             </div>
             <div class="col-md-4">
                 <label>Revisión Integral De La Piel De Miembros Inferiores</label>
-                 <select class="form-select" name="REVISION_INTEGRAL_PIEL_MIEMBROS_INFERIORES">
+                 <select class="form-select" id="REVISION_INTEGRAL_PIEL_MIEMBROS_INFERIORES" name="REVISION_INTEGRAL_PIEL_MIEMBROS_INFERIORES">
                     <option value="1">Si</option>
                     <option value="2">No</option>
 		    <option value="3">No Aplica</option>
@@ -635,7 +746,7 @@
             </div>
             <div class="col-md-4">
                 <label>Diabeticos Informados sobre Cuidados de Los pies </label>
-                 <select class="form-select" name="DIABETICOS_INFORMADOS_CUIDADOS_PIES">
+                 <select class="form-select" id="DIABETICOS_INFORMADOS_CUIDADOS_PIES" name="DIABETICOS_INFORMADOS_CUIDADOS_PIES">
                     <option value="1">Si</option>
                     <option value="2">No</option>
 		    <option value="3">No Aplica</option>
@@ -693,6 +804,7 @@
             <button class="btn btn-primary" type="submit">Guardar</button>
         </div>
     </form>
+    
     <script>
         document.getElementById("formulario").addEventListener("submit", function(event) {
         event.preventDefault(); // Evita el envío inmediato
