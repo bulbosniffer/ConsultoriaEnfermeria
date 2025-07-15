@@ -252,7 +252,7 @@ def eliminar(id):
     registro = RegistroAdultoMayor.query.get(id)
     if not registro:
         flash(f"Registro con ID {id} no encontrado.", "error")
-        return redirect(url_for('formulario.html'))
+        return redirect(url_for('formulario.formulario'))
 
     try:
         db.session.delete(registro)
@@ -261,4 +261,4 @@ def eliminar(id):
     except Exception as e:
         db.session.rollback()
         flash(f"Error al eliminar: {str(e)}", "error")
-    return redirect(url_for('formulario.html'))
+    return redirect(url_for('formulario.formulario'))
