@@ -463,6 +463,40 @@
                 <label for="hora_termino" class="form-label">Hora Término</label>
                 <input class="form-control" type="time" id="hora_termino" name="hora_termino" value="{{ datos.get('hora_termino', '') }}">
             </div>
+	<script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const inputFecha = document.getElementById('fecha');
+                const inputHora = document.getElementById('hora_inicio');
+                const inputfinHora = document.getElementById('hora_termino');
+
+                // Establecer hora actual por defecto
+                const ahora = new Date();
+                const hh = String(ahora.getHours()).padStart(2, '0');
+                const mm = String(ahora.getMinutes()).padStart(2, '0');
+                inputHora.value = `${hh}:${mm}`;
+                 
+                if (!inputFecha.value) {
+                    inputFecha.value = ahora.toISOString().split('T')[0]; // YYYY-MM-DD
+                }
+                // Al cambiar hora_inicio, suma 5 minutos a hora_termino
+                inputHora.addEventListener('change', function () {
+                if (!inputHora.value) return;
+
+                const [h, m] = inputHora.value.split(':').map(Number);
+                const fecha = new Date();
+                fecha.setHours(h);
+                fecha.setMinutes(m);
+                fecha.setMinutes(fecha.getMinutes() + 10);
+
+                const finH = String(fecha.getHours()).padStart(2, '0');
+                const finM = String(fecha.getMinutes()).padStart(2, '0');
+                inputfinHora.value = `${finH}:${finM}`;
+                });
+
+                // También lo activamos al cargar
+                inputHora.dispatchEvent(new Event('change'));
+            });
+            </script>	    
             </div>
         </fieldset>
         <fieldset class="border p-3 mb-3">
